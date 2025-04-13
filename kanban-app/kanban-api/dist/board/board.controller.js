@@ -17,62 +17,72 @@ const common_1 = require("@nestjs/common");
 const board_service_1 = require("./board.service");
 const create_board_dto_1 = require("./dto/create-board.dto");
 const update_board_dto_1 = require("./dto/update-board.dto");
+const auth_guard_1 = require("../auth/auth/auth.guard");
 let BoardController = class BoardController {
     boardService;
     constructor(boardService) {
         this.boardService = boardService;
     }
-    create(createBoardDto) {
-        return this.boardService.create(createBoardDto);
+    create(createBoardDto, req) {
+        return this.boardService.create(createBoardDto, req.user.id);
     }
-    findAll() {
-        const userId = 1;
-        return this.boardService.findAllByUserId(userId);
+    findAll(req) {
+        return this.boardService.findAllByUserId(req.user.id);
     }
-    findOne(id) {
-        return this.boardService.findOne(+id);
+    findOne(req, id) {
+        return this.boardService.findOne(+id, req.user.id);
     }
-    update(id, updateBoardDto) {
-        return this.boardService.update(+id, updateBoardDto);
+    update(req, id, updateBoardDto) {
+        return this.boardService.update(+id, req.user.id, updateBoardDto);
     }
-    remove(id) {
-        return this.boardService.remove(+id);
+    remove(req, id) {
+        return this.boardService.remove(+id, req.user.id);
     }
 };
 exports.BoardController = BoardController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_board_dto_1.CreateBoardDto]),
+    __metadata("design:paramtypes", [create_board_dto_1.CreateBoardDto, Object]),
     __metadata("design:returntype", void 0)
 ], BoardController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], BoardController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], BoardController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_board_dto_1.UpdateBoardDto]),
+    __metadata("design:paramtypes", [Object, String, update_board_dto_1.UpdateBoardDto]),
     __metadata("design:returntype", void 0)
 ], BoardController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], BoardController.prototype, "remove", null);
 exports.BoardController = BoardController = __decorate([

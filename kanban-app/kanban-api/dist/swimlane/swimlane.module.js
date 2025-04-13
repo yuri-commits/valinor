@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const swimlane_service_1 = require("./swimlane.service");
 const swimlane_controller_1 = require("./swimlane.controller");
 const swimlane_entity_1 = require("./entities/swimlane.entity");
+const user_module_1 = require("../user/user.module");
 let SwimlaneModule = class SwimlaneModule {
 };
 exports.SwimlaneModule = SwimlaneModule;
@@ -19,7 +20,8 @@ exports.SwimlaneModule = SwimlaneModule = __decorate([
     (0, common_1.Module)({
         controllers: [swimlane_controller_1.SwimlaneController],
         providers: [swimlane_service_1.SwimlaneService],
-        imports: [typeorm_1.TypeOrmModule.forFeature([swimlane_entity_1.Swimlane])]
+        imports: [typeorm_1.TypeOrmModule.forFeature([swimlane_entity_1.Swimlane]), user_module_1.UserModule],
+        exports: [swimlane_service_1.SwimlaneService]
     })
 ], SwimlaneModule);
 //# sourceMappingURL=swimlane.module.js.map

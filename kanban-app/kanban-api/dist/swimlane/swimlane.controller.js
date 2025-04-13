@@ -17,52 +17,61 @@ const common_1 = require("@nestjs/common");
 const swimlane_service_1 = require("./swimlane.service");
 const create_swimlane_dto_1 = require("./dto/create-swimlane.dto");
 const update_swimlane_dto_1 = require("./dto/update-swimlane.dto");
+const auth_guard_1 = require("../auth/auth/auth.guard");
 let SwimlaneController = class SwimlaneController {
     swimlaneService;
     constructor(swimlaneService) {
         this.swimlaneService = swimlaneService;
     }
-    create(createSwimlaneDto) {
-        return this.swimlaneService.create(createSwimlaneDto);
+    create(req, createSwimlaneDto) {
+        return this.swimlaneService.create(createSwimlaneDto, req.user.id);
     }
-    findAll(boardId) {
-        return this.swimlaneService.findAllByBoardId(Number(boardId));
+    findAll(req, boardId) {
+        return this.swimlaneService.findAllByBoardId(Number(boardId), req.user.id);
     }
-    update(id, updateSwimlaneDto) {
-        return this.swimlaneService.update(+id, updateSwimlaneDto);
+    update(req, id, updateSwimlaneDto) {
+        return this.swimlaneService.update(+id, req.user.id, updateSwimlaneDto);
     }
-    remove(id) {
-        return this.swimlaneService.remove(+id);
+    remove(req, id) {
+        return this.swimlaneService.remove(+id, req.user.id);
     }
 };
 exports.SwimlaneController = SwimlaneController;
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_swimlane_dto_1.CreateSwimlaneDto]),
+    __metadata("design:paramtypes", [Object, create_swimlane_dto_1.CreateSwimlaneDto]),
     __metadata("design:returntype", void 0)
 ], SwimlaneController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('board/:boardId'),
-    __param(0, (0, common_1.Param)('boardId')),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('boardId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], SwimlaneController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_swimlane_dto_1.UpdateSwimlaneDto]),
+    __metadata("design:paramtypes", [Object, String, update_swimlane_dto_1.UpdateSwimlaneDto]),
     __metadata("design:returntype", void 0)
 ], SwimlaneController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], SwimlaneController.prototype, "remove", null);
 exports.SwimlaneController = SwimlaneController = __decorate([

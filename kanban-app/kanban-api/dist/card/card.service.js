@@ -17,36 +17,53 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const card_entity_1 = require("./entities/card.entity");
+const swimlane_service_1 = require("../swimlane/swimlane.service");
 let CardService = class CardService {
     cardRepository;
-    constructor(cardRepository) {
+    swimlaneService;
+    constructor(cardRepository, swimlaneService) {
         this.cardRepository = cardRepository;
+        this.swimlaneService = swimlaneService;
     }
-    create(createCardDto) {
+    async create(createCardDto, userId) {
         const card = new card_entity_1.Card();
         card.name = createCardDto.name;
         card.content = createCardDto.content;
         card.order = createCardDto.order;
         card.swimlaneId = createCardDto.swimlaneId;
+        const hasAccessToSwimlane = await this.swimlaneService.hasAccessToSwimlane(createCardDto.swimlaneId, userId);
+        if (!hasAccessToSwimlane) {
+            throw new common_1.UnauthorizedException('You are not part of this board');
+        }
         return this.cardRepository.save(card);
     }
-    findAll() {
-        return `This action returns all card`;
+    update(id, userId, updateCardDto) {
+        return this.cardRepository.update({
+            id,
+            swimlane: {
+                board: { id: userId }
+            }
+        }, {
+            name: updateCardDto.name,
+            content: updateCardDto.content
+        });
     }
-    findOne(id) {
-        return `This action returns a #${id} card`;
-    }
-    update(id, updateCardDto) {
-        return `This action updates a #${id} card`;
-    }
-    remove(id) {
-        return `This action removes a #${id} card`;
+    remove(id, userId) {
+        return this.cardRepository.delete({
+            id,
+            swimlane: {
+                board: {
+                    users: { id: userId }
+                }
+            }
+        });
     }
 };
 exports.CardService = CardService;
 exports.CardService = CardService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(card_entity_1.Card)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        swimlane_service_1.SwimlaneService])
 ], CardService);
 //# sourceMappingURL=card.service.js.map

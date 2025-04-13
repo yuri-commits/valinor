@@ -17,37 +17,67 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const swimlane_entity_1 = require("./entities/swimlane.entity");
+const user_service_1 = require("../user/user.service");
 let SwimlaneService = class SwimlaneService {
     swimlaneRepository;
-    constructor(swimlaneRepository) {
+    userService;
+    constructor(swimlaneRepository, userService) {
         this.swimlaneRepository = swimlaneRepository;
+        this.userService = userService;
     }
-    create(createSwimlaneDto) {
+    async create(createSwimlaneDto, userId) {
         const swimlane = new swimlane_entity_1.Swimlane();
         swimlane.name = createSwimlaneDto.name;
         swimlane.order = createSwimlaneDto.order;
         swimlane.boardId = createSwimlaneDto.boardId;
+        const isConneted = await this.userService.isConnectedToBoard(userId, swimlane.boardId);
+        if (!isConneted) {
+            throw new common_1.UnauthorizedException('Your are not part of this board');
+        }
         return this.swimlaneRepository.save(swimlane);
     }
-    findAllByBoardId(boardId) {
+    findAllByBoardId(boardId, userId) {
         return this.swimlaneRepository.find({
-            where: { boardId }
+            where: {
+                boardId,
+                board: { users: { id: userId } }
+            }
         });
     }
-    update(id, updateSwimlaneDto) {
-        return this.swimlaneRepository.update(id, {
+    async hasAccessToSwimlane(swimlaneId, userId) {
+        const hasAccess = await this.swimlaneRepository.count({
+            where: {
+                id: swimlaneId,
+                board: { users: { id: userId } }
+            }
+        });
+        return hasAccess > 0;
+    }
+    update(id, userId, updateSwimlaneDto) {
+        return this.swimlaneRepository.update({
+            id,
+            board: {
+                users: { id: userId }
+            }
+        }, {
             name: updateSwimlaneDto.name,
             order: updateSwimlaneDto.order
         });
     }
-    remove(id) {
-        return this.swimlaneRepository.delete(id);
+    remove(id, userId) {
+        return this.swimlaneRepository.delete({
+            id,
+            board: {
+                users: { id: userId }
+            }
+        });
     }
 };
 exports.SwimlaneService = SwimlaneService;
 exports.SwimlaneService = SwimlaneService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(swimlane_entity_1.Swimlane)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        user_service_1.UserService])
 ], SwimlaneService);
 //# sourceMappingURL=swimlane.service.js.map

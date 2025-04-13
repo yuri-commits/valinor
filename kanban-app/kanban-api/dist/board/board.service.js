@@ -17,38 +17,56 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const board_entity_1 = require("./entities/board.entity");
+const user_service_1 = require("../user/user.service");
 let BoardService = class BoardService {
     boardRepository;
-    constructor(boardRepository) {
+    userService;
+    constructor(boardRepository, userService) {
         this.boardRepository = boardRepository;
+        this.userService = userService;
     }
-    create(createBoardDto) {
+    async create(createBoardDto, userId) {
         const board = new board_entity_1.Board();
         board.name = createBoardDto.name;
+        const user = await this.userService.findOne(userId);
+        board.users = [user];
         return this.boardRepository.save(board);
     }
     findAllByUserId(userId) {
         return this.boardRepository.find({
             where: { users: { id: userId } },
-            relations: ['users'],
+            relations: ['users']
         });
     }
-    findOne(id) {
-        return `This action returns a #${id} board`;
-    }
-    update(id, updateBoardDto) {
-        return this.boardRepository.update(id, {
-            name: updateBoardDto.name,
+    findOne(id, userId) {
+        return this.boardRepository.findOne({
+            where: {
+                id,
+                users: { id: userId }
+            },
+            relations: ['users', 'swimlanes', 'swimlanes.card']
         });
     }
-    remove(id) {
-        return this.boardRepository.delete(id);
+    update(id, userId, updateBoardDto) {
+        return this.boardRepository.update({
+            id,
+            users: { id: userId }
+        }, {
+            name: updateBoardDto.name
+        });
+    }
+    remove(id, userId) {
+        return this.boardRepository.delete({
+            id,
+            users: { id: userId }
+        });
     }
 };
 exports.BoardService = BoardService;
 exports.BoardService = BoardService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(board_entity_1.Board)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        user_service_1.UserService])
 ], BoardService);
 //# sourceMappingURL=board.service.js.map

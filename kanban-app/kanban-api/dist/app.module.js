@@ -19,6 +19,8 @@ const board_entity_1 = require("./board/entities/board.entity");
 const swimlane_entity_1 = require("./swimlane/entities/swimlane.entity");
 const card_entity_1 = require("./card/entities/card.entity");
 const user_entity_1 = require("./user/entities/user.entity");
+const auth_module_1 = require("./auth/auth.module");
+const auth_guard_1 = require("./auth/auth/auth.guard");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,10 +36,11 @@ exports.AppModule = AppModule = __decorate([
                 database: 'kanban-app',
                 entities: [board_entity_1.Board, swimlane_entity_1.Swimlane, card_entity_1.Card, user_entity_1.User],
                 synchronize: process.env.ENV !== 'production'
-            })
+            }),
+            auth_module_1.AuthModule
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService, auth_guard_1.AuthGuard],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

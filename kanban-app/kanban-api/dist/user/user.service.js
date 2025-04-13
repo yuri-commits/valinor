@@ -23,12 +23,21 @@ let UserService = class UserService {
         this.userRepository = userRepository;
     }
     create(createUserDto) {
-    }
-    findAllUserByBoardId(boardId) {
-        return `This action returns all user`;
+        const user = new user_entity_1.User();
+        user.email = createUserDto.email;
+        user.password = createUserDto.password;
+        user.firstName = createUserDto.firstName;
+        user.lastName = createUserDto.lastName;
+        return this.userRepository.save(user);
     }
     findOne(id) {
-        return `This action returns a #${id} user`;
+        return this.userRepository.findOneBy({ id });
+    }
+    isConnectedToBoard(id, boardId) {
+        return this.userRepository.findOneBy({
+            id,
+            boards: { id: boardId }
+        });
     }
     update(id, updateUserDto) {
         return this.userRepository.update(id, {
@@ -36,8 +45,8 @@ let UserService = class UserService {
             lastName: updateUserDto.lastName
         });
     }
-    remove(id) {
-        return this.userRepository.delete(id);
+    remove(userId) {
+        return this.userRepository.delete(userId);
     }
 };
 exports.UserService = UserService;

@@ -2,12 +2,14 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Repository } from 'typeorm';
 import { Board } from './entities/board.entity';
+import { UserService } from 'src/user/user.service';
 export declare class BoardService {
     private boardRepository;
-    constructor(boardRepository: Repository<Board>);
-    create(createBoardDto: CreateBoardDto): Promise<Board>;
+    private userService;
+    constructor(boardRepository: Repository<Board>, userService: UserService);
+    create(createBoardDto: CreateBoardDto, userId: number): Promise<Board>;
     findAllByUserId(userId: number): Promise<Board[]>;
-    findOne(id: number): string;
-    update(id: number, updateBoardDto: UpdateBoardDto): Promise<import("typeorm").UpdateResult>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
+    findOne(id: number, userId: number): Promise<Board | null>;
+    update(id: number, userId: number, updateBoardDto: UpdateBoardDto): Promise<import("typeorm").UpdateResult>;
+    remove(id: number, userId: number): Promise<import("typeorm").DeleteResult>;
 }
